@@ -1,4 +1,4 @@
-#! /usr/bin/python3
+#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 '''
 Search for a word or expression in docx documents from an input directory
@@ -6,8 +6,8 @@ and return the paths to the files where the word/expression is found.
 '''
 
 import os
+import sys
 import re
-from sys import exit
 from traceback import format_exc
 from time import localtime, strftime
 import docx
@@ -68,14 +68,14 @@ if answ == 'y':
     try:
         os.mkdir(outDir)
     except FileExistsError:
-        exit('''\nThere is already a subfolder with this name.
+        sys.exit('''\nThere is already a subfolder with this name.
 Please wait a sec and try again.''')
     except Exception:
-        exit('''\nUser does not have privileges to create directories
+        sys.exit('''\nUser does not have privileges to create directories
 in the current folder. The program was aborted.''')
 else:
     print('\nThank you for trying! Please come back when you are ready.')
-    exit()
+    sys.exit()
 
 # setting the path to the folder to search in
 while True:
@@ -83,7 +83,7 @@ while True:
 Enter the full path to the folder to search in: ''')
     if calea == '':
         os.rmdir(outDir)
-        exit('\nThank you for trying! Please come back when you are ready.')
+        sys.exit('\nThank you for trying! Please come back when you are ready.')
     elif os.path.exists(calea):
         if os.path.isdir(calea):
             print('\nTotal size of the files in the current folder:',
@@ -100,7 +100,7 @@ Enter the full path to the folder to search in: ''')
 cuv = input('''\n[To quit: Press Enter]
 Enter the word or expression to search for: ''')
 if cuv == '' or cuv == ' ':
-    exit('\nThank you for trying! Please come back when you are ready.')
+    sys.exit('\nThank you for trying! Please come back when you are ready.')
 
 # setting the paths for output files (inside the output folder)
 FileText = os.path.join(outDir, 'FileText.txt')
@@ -126,12 +126,12 @@ for filepath in listaFis:
                 count_op += 1
             else:
                 errorFile = open(ErrorInfo, 'a')
-                errorFile.write('Path: %s is not a file.\n' %filepath)
+                errorFile.write('Path: %s is not a file.\n' % filepath)
                 errorFile.close()
                 print('\nThe traceback info was written to ErrorInfo.txt.')
         except (KeyError, ValueError):
             unopefil = open(NotOpFiles, 'a')
-            unopefil.write('Can\'t open file: %s\n' %filepath)
+            unopefil.write('Can\'t open file: %s\n' % filepath)
             unopefil.close()
             count_unop += 1
             print('''\nThe path to a non-valid docx file was written to
@@ -155,14 +155,14 @@ for filepath in listaFis:
                 listaFound.append(filepath)
                 count_foundfiles += 1
             cuvlst = open(Matches, 'a')
-            cuvlst.write('\nItems extracted from file - %s: \n' %filepath)
+            cuvlst.write('\nItems extracted from file - %s: \n' % filepath)
             cuvlst.write('\n'.join(lstcuv))
             cuvlst.close()
 
 # write the paths to all files containing the input word
 with open(WordFoundFiles, 'a') as fis:
     for pth in listaFound:
-        fis.write('Expression "%s" found in file: %s\n' %(cuv, pth))
+        fis.write('Expression "%s" found in file: %s\n' % (cuv, pth))
 
 # remove the temporary file and print the counters for files
 os.remove(FileText)
