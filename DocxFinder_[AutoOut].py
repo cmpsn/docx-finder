@@ -80,10 +80,10 @@ else:
 # setting the path to the folder to search in
 while True:
     calea = input('''\n[To quit: Press Enter]
-Enter the full path to the folder to search in: ''')
+To continue: Type the full path to the folder to search in: ''')
     if calea == '':
         os.rmdir(outDir)
-        sys.exit('\nThank you for trying! Please come back when you are ready.')
+        sys.exit('\nThank you for trying!Please come back when you are ready.')
     elif os.path.exists(calea):
         if os.path.isdir(calea):
             print('\nTotal size of the files in the current folder:',
@@ -98,8 +98,8 @@ Enter the full path to the folder to search in: ''')
 
 # pointing for the word/expression to search for
 cuv = input('''\n[To quit: Press Enter]
-Enter the word or expression to search for: ''')
-if cuv == '' or cuv == ' ':
+To continue: Type the word or expression to search for: ''')
+if cuv == '' or cuv == ' ' or cuv in '!"$„”“%&\'()*+–,./:;<=>?@[\]^_`{|}~':
     sys.exit('\nThank you for trying! Please come back when you are ready.')
 
 # setting the paths for output files (inside the output folder)
@@ -128,21 +128,20 @@ for filepath in listaFis:
                 errorFile = open(ErrorInfo, 'a')
                 errorFile.write('Path: %s is not a file.\n' % filepath)
                 errorFile.close()
-                print('\nThe traceback info was written to ErrorInfo.txt.')
+                # print('\nTraceback info sent to ErrorInfo.txt.')
         except (KeyError, ValueError):
             unopefil = open(NotOpFiles, 'a')
             unopefil.write('Can\'t open file: %s\n' % filepath)
             unopefil.close()
             count_unop += 1
-            print('''\nThe path to a non-valid docx file was written to
-                  NotOpFiles.txt.''')
+            # print('\nPath to a non-valid docx file sent to NotOpFiles.txt.')
         except Exception:
             errorFile = open(ErrorInfo, 'a')
             errorFile.write(format_exc())
             errorFile.write('\n')
             errorFile.close()
             count_unop += 1
-            print('\nThe traceback info was written to ErrorInfo.txt.')
+            # print('\nTraceback info sent to ErrorInfo.txt.')
     # search the input word using regular expressions
     # inside the temporary text file 'Filetext',
     # and returns a list of paths to the actual files containing the input word
@@ -172,7 +171,7 @@ print('\nUnprocessed files (due to invalid docx metadata):', count_unop)
 print('\nFiles with matches:', count_foundfiles)
 
 # print final info
-print('\nThe list of matches was written to Matches.txt.')
-print('\nThe paths to eligible files were written to WordFoundFiles.txt')
+print('\nThe list of matches is in Matches.txt.')
+print('\nThe paths to eligible files is in WordFoundFiles.txt')
 print('''\nTo check the results, open the txt files from the most recent
 "Ouput" folder.\n''')
