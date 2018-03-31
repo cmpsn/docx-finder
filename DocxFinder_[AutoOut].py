@@ -119,6 +119,7 @@ count_tot = 0
 count_op = 0
 count_unop = 0
 count_foundfiles = 0
+num_matches = 0
 for filepath in listaFis:
     count_tot += 1
     with open(FileText, 'w') as fit:
@@ -155,6 +156,7 @@ for filepath in listaFis:
             if filepath not in listaFound:
                 listaFound.append(filepath)
                 count_foundfiles += 1
+                num_matches += len(lstcuv)
             cuvlst = open(Matches, 'a')
             cuvlst.write('\nItems extracted from file - %s: \n' % filepath)
             cuvlst.write('\n'.join(lstcuv))
@@ -166,21 +168,29 @@ for filepath in listaFis:
 
 # remove the temporary file and print the counters for files
 os.remove(FileText)
-print('\nTotal docx files along the path:', count_tot)
+print('\nDocx files along the path:', count_tot)
 print('Files processed:', count_op)
 print('Files not processed (docx not valid):', count_unop)
 print('Files with matches:', count_foundfiles)
+print('Total word/expression matches:', num_matches)
 
-# print the final info
-if os.path.exists(Matches) or os.path.exists(FoundFiles) or \
-            os.path.exists(NotOpFiles) or os.path.exists(ErrorInfo):
+# check if the output files exists and print the final info
+match_f_ex = os.path.exists(Matches)
+found_f_ex = os.path.exists(FoundFiles)
+notOp_f_ex = os.path.exists(NotOpFiles)
+errInf_f_ex = os.path.exists(ErrorInfo)
+
+if match_f_ex or found_f_ex or notOp_f_ex or errInf_f_ex:
     print('''\nTo check the results, open the txt files created inside
-the most recent "Ouput" folder (from your current directory):\n''')
-if os.path.exists(Matches):
-    print(' - The list of matches is in "Matches.txt".\n')
-if os.path.exists(FoundFiles):
-    print(' - The paths to matching files are in "FoundFiles.txt".\n')
-if os.path.exists(NotOpFiles):
+the most recent "Ouput_..." folder (from your current directory):\n''')
+else:
+    os.rmdir(outDir)
+
+if match_f_ex:
+    print(' - The list of words/expressions that match is in "Matches.txt".\n')
+if found_f_ex:
+    print(' - The paths to files with matches are in "FoundFiles.txt".\n')
+if notOp_f_ex:
     print(' - The paths to not valid ".docx" files are in "NotOpFiles.txt".\n')
-if os.path.exists(ErrorInfo):
+if errInf_f_ex:
     print(' - The traceback info is in ErrorInfo.txt.\n')
