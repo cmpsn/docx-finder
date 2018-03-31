@@ -101,6 +101,8 @@ cuv = input('''\n[To quit: Press Enter]
 To continue: Type the word or expression to search for: ''')
 if cuv == '' or cuv == ' ' or cuv in '!"$„”“%&\'()*+–,./:;<=>?@[\]^_`{|}~':
     sys.exit('\nThank you for trying! Please come back when you are ready.')
+else:
+    print('Working...')
 
 # setting the paths for output files (inside the output folder)
 FileText = os.path.join(outDir, 'FileText.txt')
