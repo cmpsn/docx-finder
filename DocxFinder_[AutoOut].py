@@ -79,8 +79,8 @@ else:
 
 # setting the path to the folder to search in
 while True:
-    calea = input('''\n[To quit: Press Enter]
-To continue: Type the full path to the folder to search in: ''')
+    calea = input('''\n[To quit -> Press Enter]
+To continue -> Type a full path to search in. \n''')
     if calea == '':
         os.rmdir(outDir)
         sys.exit('\nThank you for trying!Please come back when you are ready.')
@@ -97,16 +97,16 @@ To continue: Type the full path to the folder to search in: ''')
         continue
 
 # pointing for the word/expression to search for
-cuv = input('''\n[To quit: Press Enter]
-To continue: Type the word or expression to search for: ''')
+cuv = input('''\n[To quit -> Press Enter]
+To continue -> Type a word or an expression to search for. \n''')
 if cuv == '' or cuv == ' ' or cuv in '!"$„”“%&\'()*+–,./:;<=>?@[\]^_`{|}~':
     sys.exit('\nThank you for trying! Please come back when you are ready.')
 else:
-    print('Working...')
+    print('\nWorking...')
 
 # setting the paths for output files (inside the output folder)
 FileText = os.path.join(outDir, 'FileText.txt')
-WordFoundFiles = os.path.join(outDir, 'WordFoundFiles.txt')
+FoundFiles = os.path.join(outDir, 'FoundFiles.txt')
 ErrorInfo = os.path.join(outDir, 'ErrorInfo.txt')
 NotOpFiles = os.path.join(outDir, 'NotOpFiles.txt')
 Matches = os.path.join(outDir, 'Matches.txt')
@@ -159,21 +159,27 @@ for filepath in listaFis:
             cuvlst.write('\nItems extracted from file - %s: \n' % filepath)
             cuvlst.write('\n'.join(lstcuv))
             cuvlst.close()
-
-# write the paths to all files containing the input word
-with open(WordFoundFiles, 'a') as fis:
-    for pth in listaFound:
-        fis.write('Expression "%s" found in file: %s\n' % (cuv, pth))
+            # write the path to each file containing the input word
+            fislst = open(FoundFiles, 'a')
+            fislst.write('\nText "%s" found in file: %s\n' % (cuv, filepath))
 
 # remove the temporary file and print the counters for files
 os.remove(FileText)
 print('\nTotal docx files along the path:', count_tot)
-print('\nProcessed files:', count_op)
-print('\nUnprocessed files (due to invalid docx metadata):', count_unop)
-print('\nFiles with matches:', count_foundfiles)
+print('Files processed:', count_op)
+print('Files not processed (docx not valid):', count_unop)
+print('Files with matches:', count_foundfiles)
 
-# print final info
-print('\nThe list of matches is in Matches.txt.')
-print('\nThe paths to eligible files is in WordFoundFiles.txt')
-print('''\nTo check the results, open the txt files from the most recent
-"Ouput" folder.\n''')
+# print the final info
+if os.path.exists(Matches) or os.path.exists(FoundFiles) or \
+            os.path.exists(NotOpFiles) or os.path.exists(ErrorInfo):
+    print('''\nTo check the results, open the txt files created inside
+the most recent "Ouput" folder (from your current directory):\n''')
+if os.path.exists(Matches):
+    print(' - The list of matches is in "Matches.txt".\n')
+if os.path.exists(FoundFiles):
+    print(' - The paths to matching files are in "FoundFiles.txt".\n')
+if os.path.exists(NotOpFiles):
+    print(' - The paths to not valid ".docx" files are in "NotOpFiles.txt".\n')
+if os.path.exists(ErrorInfo):
+    print(' - The traceback info is in ErrorInfo.txt.\n')
