@@ -162,6 +162,7 @@ for filepath in listaFis:
             # write the path to each file containing the input word
             fislst = open(FoundFiles, 'a')
             fislst.write('\nText "%s" found in file: %s\n' % (cuv, filepath))
+            fislst.close()
 
 # remove the temporary file and print the counters for files
 os.remove(FileText)
