@@ -159,11 +159,19 @@ for filepath in listFiles:
 
 # remove the temporary file and print the counters for files
 os.remove(fileText)
+print('Done!')
 print('\nDocx files along the path:', count_tot)
 print('Files processed:', count_op)
 print('Files not processed (docx not valid):', count_unop)
 print('Files with matches:', count_foundfiles)
 print('Total word/expression matches:', num_matches)
+
+print('\nFiles with matches:')
+if len(filesFound) > 0:
+    for fil in filesFound:
+        print(fil)
+else:
+    print("No file with matches.")
 
 # check if the output files exist and print the final info
 match_ex = os.path.exists(matches)
@@ -172,7 +180,7 @@ notOp_ex = os.path.exists(notOpFiles)
 errInf_ex = os.path.exists(errorInfo)
 
 if match_ex or found_ex or notOp_ex or errInf_ex:
-    print('''\nTo check the results, open the txt files created inside
+    print('''\nTo check the details, open the txt files created inside
 the most recent "Ouput_..." folder (from your current directory):\n''')
 else:
     print('Nothing to output.')
