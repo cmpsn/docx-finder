@@ -150,9 +150,9 @@ for filepath in listFiles:
                 filesFound.append(filepath)
                 count_foundfiles += 1
                 num_matches += len(listMatches)
-            with open(matches, 'a') as match:
-                match.write('\nItems extracted from file: %s --\n' % filepath)
-                match.write('\n'.join(listMatches))
+            with open(matches, 'a') as mtch:
+                mtch.write('\nItems extracted from file: %s --\n' % filepath)
+                mtch.write('\n'.join(listMatches))
             # write the path to each file containing the input expression
             with open(foundFiles, 'a') as fnd:
                 fnd.write('\n"%s" found in file: %s\n' % (word, filepath))
