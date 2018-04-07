@@ -51,8 +51,8 @@ def getText(filename):
 
 print('''
       To save some output files, the application will create a new subfolder
-      (named "Output") inside the current folder. In order to do this,
-      you have to run the program from a folder where the user is allowed
+      (named "Output") inside your current directory. In order to do this,
+      you have to run the program from a folder where you are allowed
       to make changes/ create directories.
       ''')
 # setting the path to the folder where the output files will be saved in
@@ -146,16 +146,15 @@ for filepath in listFiles:
         reader = textFile.read()
         listMatches = re.findall(word, reader)
         if len(listMatches) > 0:
-            if filepath not in filesFound:
-                filesFound.append(filepath)
-                count_foundfiles += 1
-                num_matches += len(listMatches)
+            filesFound.append(filepath)
+            count_foundfiles += 1
+            num_matches += len(listMatches)
             with open(matches, 'a') as mtch:
-                mtch.write('\nItems extracted from file: %s --\n' % filepath)
+                mtch.write('\nItems extracted from file %s :\n' % filepath)
                 mtch.write('\n'.join(listMatches))
             # write the path to each file containing the input expression
             with open(foundFiles, 'a') as fnd:
-                fnd.write('\n"%s" found in file: %s\n' % (word, filepath))
+                fnd.write('\n"%s" found in files: %s\n' % (word, filepath))
 
 # remove the temporary file and print the counters for files
 os.remove(fileText)
@@ -181,7 +180,7 @@ errInf_ex = os.path.exists(errorInfo)
 
 if match_ex or found_ex or notOp_ex or errInf_ex:
     print('''\nTo check the details, open the txt files created inside
-the most recent "Ouput_..." folder (from your current directory):\n''')
+folder "''' + outfold + '''" (in your current directory):\n''')
 else:
     print('Nothing to output.')
     os.rmdir(outDir)
