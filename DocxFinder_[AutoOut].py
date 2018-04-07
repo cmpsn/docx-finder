@@ -105,11 +105,11 @@ else:
     print('\nWorking...')
 
 # setting the paths for output files (inside the output folder)
-FileText = os.path.join(outDir, 'FileText.txt')
-FoundFiles = os.path.join(outDir, 'FoundFiles.txt')
-ErrorInfo = os.path.join(outDir, 'ErrorInfo.txt')
-NotOpFiles = os.path.join(outDir, 'NotOpFiles.txt')
-Matches = os.path.join(outDir, 'Matches.txt')
+fileText = os.path.join(outDir, 'FileText.txt')
+foundFiles = os.path.join(outDir, 'FoundFiles.txt')
+errorInfo = os.path.join(outDir, 'ErrorInfo.txt')
+notOpFiles = os.path.join(outDir, 'NotOpFiles.txt')
+matches = os.path.join(outDir, 'Matches.txt')
 
 # iterate through the list of file paths, get the text from each file,
 # count opened files (count_op) and total files (count_tot)
@@ -121,20 +121,20 @@ count_unop = 0
 count_foundfiles = 0
 num_matches = 0
 for filepath in listFiles:
-    with open(FileText, 'w') as textFile:
+    with open(fileText, 'w') as textFile:
         try:
             if os.path.isfile(filepath):
                 textFile.write(getText(filepath))
                 count_op += 1
             else:
-                with open(ErrorInfo, 'a') as errorFile:
+                with open(errorInfo, 'a') as errorFile:
                     errorFile.write('Path %s is not a file.\n' % filepath)
         except (KeyError, ValueError):
-            with open(NotOpFiles, 'a') as unopFile:
+            with open(notOpFiles, 'a') as unopFile:
                 unopFile.write('Can\'t open file: %s\n' % filepath)
             count_unop += 1
         except Exception:
-            with open(ErrorInfo, 'a') as errorFile:
+            with open(errorInfo, 'a') as errorFile:
                 errorFile.write(format_exc())
                 errorFile.write('\n')
             count_unop += 1
@@ -142,7 +142,7 @@ for filepath in listFiles:
     # inside the temporary text file 'Filetext',
     # and returns a list of paths to the actual files containing the input word
     # AND a list of all matches in each file
-    with open(FileText, 'r') as textFile:
+    with open(fileText, 'r') as textFile:
         reader = textFile.read()
         listMatches = re.findall(word, reader)
         if len(listMatches) > 0:
@@ -150,15 +150,15 @@ for filepath in listFiles:
                 filesFound.append(filepath)
                 count_foundfiles += 1
                 num_matches += len(listMatches)
-            with open(Matches, 'a') as match:
+            with open(matches, 'a') as match:
                 match.write('\nItems extracted from file: %s --\n' % filepath)
                 match.write('\n'.join(listMatches))
             # write the path to each file containing the input word
-            with open(FoundFiles, 'a') as fnd:
+            with open(foundFiles, 'a') as fnd:
                 fnd.write('\n"%s" found in file: %s\n' % (word, filepath))
 
 # remove the temporary file and print the counters for files
-os.remove(FileText)
+os.remove(fileText)
 print('\nDocx files along the path:', count_tot)
 print('Files processed:', count_op)
 print('Files not processed (docx not valid):', count_unop)
@@ -166,10 +166,10 @@ print('Files with matches:', count_foundfiles)
 print('Total word/expression matches:', num_matches)
 
 # check if the output files exists and print the final info
-match_ex = os.path.exists(Matches)
-found_ex = os.path.exists(FoundFiles)
-notOp_ex = os.path.exists(NotOpFiles)
-errInf_ex = os.path.exists(ErrorInfo)
+match_ex = os.path.exists(matches)
+found_ex = os.path.exists(foundFiles)
+notOp_ex = os.path.exists(notOpFiles)
+errInf_ex = os.path.exists(errorInfo)
 
 if match_ex or found_ex or notOp_ex or errInf_ex:
     print('''\nTo check the results, open the txt files created inside
