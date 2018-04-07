@@ -8,9 +8,9 @@ and return the paths to the files where the word/expression is found.
 import os
 import sys
 import re
+import docx
 from traceback import format_exc
 from time import localtime, strftime
-import docx
 
 
 def dirSize(inPath):
