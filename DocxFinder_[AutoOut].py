@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 '''
-Search for a word or expression in docx documents from an input directory
+Search for a word or expression inside docx documents
 and return the paths to the files where the word/expression is found.
 '''
 
@@ -26,7 +26,7 @@ def dirSize(inPath):
 
 def filesList(inPath):
     '''
-    Return the list of '.docx' files in the input directory (strings).
+    Return the list of '.docx' files inside in the input directory (paths).
     '''
     suffix = '.docx'
     lstFiles = []
@@ -112,7 +112,7 @@ notOpFiles = os.path.join(outDir, 'NotOpFiles.txt')
 matches = os.path.join(outDir, 'Matches.txt')
 
 # iterate through the list of file paths, get the text from each file,
-# count opened files (count_op) and total files (count_tot)
+# count opened, unopened, found, and total files; count expression matches
 listFiles = filesList(thePath)
 filesFound = []
 count_tot = len(listFiles)
@@ -138,8 +138,8 @@ for filepath in listFiles:
                 errorFile.write(format_exc())
                 errorFile.write('\n')
             count_unop += 1
-    # search the input word using regular expressions
-    # inside the temporary text file 'Filetext',
+    # using regular expressions, search the input expression
+    # inside the temporary text file,
     # and returns a list of paths to the actual files containing the input word
     # AND a list of all matches in each file
     with open(fileText, 'r') as textFile:
@@ -153,7 +153,7 @@ for filepath in listFiles:
             with open(matches, 'a') as match:
                 match.write('\nItems extracted from file: %s --\n' % filepath)
                 match.write('\n'.join(listMatches))
-            # write the path to each file containing the input word
+            # write the path to each file containing the input expression
             with open(foundFiles, 'a') as fnd:
                 fnd.write('\n"%s" found in file: %s\n' % (word, filepath))
 
@@ -165,7 +165,7 @@ print('Files not processed (docx not valid):', count_unop)
 print('Files with matches:', count_foundfiles)
 print('Total word/expression matches:', num_matches)
 
-# check if the output files exists and print the final info
+# check if the output files exist and print the final info
 match_ex = os.path.exists(matches)
 found_ex = os.path.exists(foundFiles)
 notOp_ex = os.path.exists(notOpFiles)
