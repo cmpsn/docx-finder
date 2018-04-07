@@ -24,17 +24,17 @@ def dirSize(inPath):
     return size
 
 
-def listaFiles(InPath):
+def filesList(inPath):
     '''
     Return the list of '.docx' files in the input directory (strings).
     '''
     suffix = '.docx'
-    listaFiles = []
-    for dirpath, dirnames, filenames in os.walk(InPath):
+    lstFiles = []
+    for dirpath, dirnames, filenames in os.walk(inPath):
         for filename in filenames:
             if filename.endswith(suffix):
-                listaFiles.append(os.path.join(dirpath, filename))
-    return listaFiles
+                lstFiles.append(os.path.join(dirpath, filename))
+    return lstFiles
 
 
 def getText(filename):
@@ -79,15 +79,15 @@ else:
 
 # setting the path to the folder to search in
 while True:
-    calea = input('''\n[To quit -> Press Enter]
+    thePath = input('''\n[To quit -> Press Enter]
 To continue -> Type a full path to search in. \n''')
-    if calea == '':
+    if thePath == '':
         os.rmdir(outDir)
         sys.exit('\nThank you for trying!Please come back when you are ready.')
-    elif os.path.exists(calea):
-        if os.path.isdir(calea):
+    elif os.path.exists(thePath):
+        if os.path.isdir(thePath):
             print('\nTotal size of the files in the current folder:',
-                  dirSize(calea), 'bytes')
+                  dirSize(thePath), 'bytes')
             break
         else:
             print('\nPlease enter the valid path to a folder, not to a file.')
@@ -97,9 +97,9 @@ To continue -> Type a full path to search in. \n''')
         continue
 
 # pointing for the word/expression to search for
-cuv = input('''\n[To quit -> Press Enter]
+word = input('''\n[To quit -> Press Enter]
 To continue -> Type a word or an expression to search for. \n''')
-if cuv == '' or cuv == ' ' or cuv in '!"$„”“%&\'()*+–,./:;<=>?@[\]^_`{|}~':
+if word == '' or word == ' ' or word in '!"$„”“%&\'()*+–,./:;<=>?@[\]^_`{|}~':
     sys.exit('\nThank you for trying! Please come back when you are ready.')
 else:
     print('\nWorking...')
@@ -113,58 +113,49 @@ Matches = os.path.join(outDir, 'Matches.txt')
 
 # iterate through the list of file paths, get the text from each file,
 # count opened files (count_op) and total files (count_tot)
-listaFis = listaFiles(calea)
-listaFound = []
-count_tot = 0
+listFiles = filesList(thePath)
+filesFound = []
+count_tot = len(listFiles)
 count_op = 0
 count_unop = 0
 count_foundfiles = 0
 num_matches = 0
-for filepath in listaFis:
-    count_tot += 1
-    with open(FileText, 'w') as fit:
+for filepath in listFiles:
+    with open(FileText, 'w') as textFile:
         try:
             if os.path.isfile(filepath):
-                fit.write(getText(filepath))
+                textFile.write(getText(filepath))
                 count_op += 1
             else:
-                errorFile = open(ErrorInfo, 'a')
-                errorFile.write('Path: %s is not a file.\n' % filepath)
-                errorFile.close()
-                # print('\nTraceback info sent to ErrorInfo.txt.')
+                with open(ErrorInfo, 'a') as errorFile:
+                    errorFile.write('Path %s is not a file.\n' % filepath)
         except (KeyError, ValueError):
-            unopefil = open(NotOpFiles, 'a')
-            unopefil.write('Can\'t open file: %s\n' % filepath)
-            unopefil.close()
+            with open(NotOpFiles, 'a') as unopFile:
+                unopFile.write('Can\'t open file: %s\n' % filepath)
             count_unop += 1
-            # print('\nPath to a non-valid docx file sent to NotOpFiles.txt.')
         except Exception:
-            errorFile = open(ErrorInfo, 'a')
-            errorFile.write(format_exc())
-            errorFile.write('\n')
-            errorFile.close()
+            with open(ErrorInfo, 'a') as errorFile:
+                errorFile.write(format_exc())
+                errorFile.write('\n')
             count_unop += 1
-            # print('\nTraceback info sent to ErrorInfo.txt.')
     # search the input word using regular expressions
     # inside the temporary text file 'Filetext',
     # and returns a list of paths to the actual files containing the input word
     # AND a list of all matches in each file
-    with open(FileText, 'r') as f:
-        reader = f.read()
-        lstcuv = re.findall(cuv, reader)
-        if len(lstcuv) > 0:
-            if filepath not in listaFound:
-                listaFound.append(filepath)
+    with open(FileText, 'r') as textFile:
+        reader = textFile.read()
+        listMatches = re.findall(word, reader)
+        if len(listMatches) > 0:
+            if filepath not in filesFound:
+                filesFound.append(filepath)
                 count_foundfiles += 1
-                num_matches += len(lstcuv)
-            cuvlst = open(Matches, 'a')
-            cuvlst.write('\nItems extracted from file - %s: \n' % filepath)
-            cuvlst.write('\n'.join(lstcuv))
-            cuvlst.close()
+                num_matches += len(listMatches)
+            with open(Matches, 'a') as match:
+                match.write('\nItems extracted from file: %s --\n' % filepath)
+                match.write('\n'.join(listMatches))
             # write the path to each file containing the input word
-            fislst = open(FoundFiles, 'a')
-            fislst.write('\nText "%s" found in file: %s\n' % (cuv, filepath))
-            fislst.close()
+            with open(FoundFiles, 'a') as fnd:
+                fnd.write('\n"%s" found in file: %s\n' % (word, filepath))
 
 # remove the temporary file and print the counters for files
 os.remove(FileText)
@@ -175,22 +166,23 @@ print('Files with matches:', count_foundfiles)
 print('Total word/expression matches:', num_matches)
 
 # check if the output files exists and print the final info
-match_f_ex = os.path.exists(Matches)
-found_f_ex = os.path.exists(FoundFiles)
-notOp_f_ex = os.path.exists(NotOpFiles)
-errInf_f_ex = os.path.exists(ErrorInfo)
+match_ex = os.path.exists(Matches)
+found_ex = os.path.exists(FoundFiles)
+notOp_ex = os.path.exists(NotOpFiles)
+errInf_ex = os.path.exists(ErrorInfo)
 
-if match_f_ex or found_f_ex or notOp_f_ex or errInf_f_ex:
+if match_ex or found_ex or notOp_ex or errInf_ex:
     print('''\nTo check the results, open the txt files created inside
 the most recent "Ouput_..." folder (from your current directory):\n''')
 else:
+    print('Nothing to output.')
     os.rmdir(outDir)
 
-if match_f_ex:
-    print(' - The list of words/expressions that match is in "Matches.txt".\n')
-if found_f_ex:
+if match_ex:
+    print(' - The list of expressions that match is in "Matches.txt".\n')
+if found_ex:
     print(' - The paths to files with matches are in "FoundFiles.txt".\n')
-if notOp_f_ex:
+if notOp_ex:
     print(' - The paths to not valid ".docx" files are in "NotOpFiles.txt".\n')
-if errInf_f_ex:
+if errInf_ex:
     print(' - The traceback info is in ErrorInfo.txt.\n')
