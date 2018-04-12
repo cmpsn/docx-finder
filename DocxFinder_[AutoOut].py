@@ -115,55 +115,54 @@ matches = os.path.join(outDir, 'Matches.txt')
 # count opened, unopened, found, and total files; count expression matches
 listFiles = filesList(thePath)
 filesFound = []
-count_tot = len(listFiles)
-count_op = 0
-count_unop = 0
-count_foundfiles = 0
-num_matches = 0
+count_dict = {'count_tot': len(listFiles), 'count_op': 0, 'count_unop': 0,
+              'count_foundfiles': 0, 'num_matches': 0}
 for filepath in listFiles:
-    with open(fileText, 'w') as textFile:
+    if os.path.isfile(filepath):
         try:
-            if os.path.isfile(filepath):
+            # using regular expressions, search the input expression
+            # inside the temporary text file,
+            # and returns a list of paths to the files with the input word
+            # AND a list of all matches in each file
+            with open(fileText, 'w') as textFile:
                 textFile.write(getText(filepath))
-                count_op += 1
-            else:
-                with open(errorInfo, 'a') as errorFile:
-                    errorFile.write('Path %s is not a file.\n' % filepath)
+                count_dict['count_op'] += 1
+            with open(fileText, 'r') as textFile:
+                reader = textFile.read()
+                listMatches = re.findall(word, reader)
+                if len(listMatches) > 0:
+                    filesFound.append(filepath)
+                    count_dict['count_foundfiles'] += 1
+                    count_dict['num_matches'] += len(listMatches)
+                    with open(matches, 'a') as mtch:
+                        mtch.write(
+                            '\nItems extracted from file %s : \n' % filepath)
+                        mtch.write('\n'.join(listMatches))
+                    # write the path to each file which contains the expression
+                    with open(foundFiles, 'a') as fnd:
+                        fnd.write(
+                            '\n"%s" found in files: %s\n' % (word, filepath))
         except (KeyError, ValueError):
             with open(notOpFiles, 'a') as unopFile:
                 unopFile.write('Can\'t open file: %s\n' % filepath)
-            count_unop += 1
+            count_dict['count_unop'] += 1
         except Exception:
             with open(errorInfo, 'a') as errorFile:
                 errorFile.write(format_exc())
                 errorFile.write('\n')
-            count_unop += 1
-    # using regular expressions, search the input expression
-    # inside the temporary text file,
-    # and returns a list of paths to the actual files containing the input word
-    # AND a list of all matches in each file
-    with open(fileText, 'r') as textFile:
-        reader = textFile.read()
-        listMatches = re.findall(word, reader)
-        if len(listMatches) > 0:
-            filesFound.append(filepath)
-            count_foundfiles += 1
-            num_matches += len(listMatches)
-            with open(matches, 'a') as mtch:
-                mtch.write('\nItems extracted from file %s :\n' % filepath)
-                mtch.write('\n'.join(listMatches))
-            # write the path to each file containing the input expression
-            with open(foundFiles, 'a') as fnd:
-                fnd.write('\n"%s" found in files: %s\n' % (word, filepath))
+            count_dict['count_unop'] += 1
+    else:
+        with open(errorInfo, 'a') as errorFile:
+            errorFile.write('Path %s is not a file.\n' % filepath)
 
 # remove the temporary file and print the counters for files
 os.remove(fileText)
 print('Done!')
-print('\nDocx files along the path:', count_tot)
-print('Files processed:', count_op)
-print('Files not processed (docx not valid):', count_unop)
-print('Files with matches:', count_foundfiles)
-print('Total word/expression matches:', num_matches)
+print('\nDocx files along the path:', count_dict['count_tot'])
+print('Files processed:', count_dict['count_op'])
+print('Files not processed (docx not valid):', count_dict['count_unop'])
+print('Files with matches:', count_dict['count_foundfiles'])
+print('Total word/expression matches:', count_dict['num_matches'])
 
 print('\nFiles with matches:')
 if len(filesFound) > 0:
